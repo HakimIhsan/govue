@@ -29,7 +29,7 @@ func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(CORSMiddleware())
 	// Get user value
-	r.GET("/user/:name", controllers.GetUser)
+	// r.GET("/user/:name", controllers.GetUser)
 	// Authorized group (uses gin.BasicAuth() middleware)
 	// Same than:
 	// authorized := r.Group("/")
@@ -37,12 +37,12 @@ func SetupRouter() *gin.Engine {
 	//	  "foo":  "bar",
 	//	  "manu": "123",
 	//}))
-	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
-		"foo":  "bar", // user:foo password:bar
-		"manu": "123", // user:manu password:123
-	}))   
+	r.POST("/login", controllers.LoginDB)
+
+	authorized := r.Group("/", controllers.MiddleJWT)   
 
 	// Ping test
+	r.GET("/check", controllers.Check)
 	authorized.GET("/ping", controllers.Ping)
 
 	// CRUD Routes
@@ -61,7 +61,7 @@ func SetupRouter() *gin.Engine {
 	  	-H 'content-type: application/json' \
 	  	-d '{"value":"bar"}'
 	*/
-	authorized.POST("admin", controllers.AdminPost)
+	// authorized.POST("admin", controllers.AdminPost)
 
 	return r
 }
